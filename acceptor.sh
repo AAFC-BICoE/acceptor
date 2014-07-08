@@ -19,18 +19,24 @@
 #           - must be world writable
 #
 
-# Any number of lines:
-message[0]="[example] Foobar varsion 1.7 installed; Foobar v.1.6 still available at /opt/old/foobar"
-message[1]="   Foobar v.1.6 still available at /opt/old/foobar"
-message[2]="   Any issues please contact foo@bar.com"
+set -e
 
-# Alternate form acceptable:
-#  message=("[example] Foobar varsion 1.7 installed; Foobar v.1.6 still available at /opt/old/foobar", "   Foobar v.1.6 still available at /opt/old/foobar", " Any issues please contact foo@bar.com")
+# Message goes here; any number of lines.
+#     Alternate form acceptable:
+#       MESSAGE=("[example] Foobar varsion 1.7 installed", "  Foobar v.1.6 still available", " Any issues please contact foo@bar.com")
+MESSAGE[0]="[example] Foobar varsion 1.7 installed; Foobar v.1.6 still available at /opt/old/foobar"
+MESSAGE[1]="   Foobar v.1.6 still available at /opt/old/foobar"
+MESSAGE[2]="   Any issues please contact foo@bar.com 23"
 
-#
-prompt="Please acknowledge you have read and understand the above message by typing \"yes\" at this prompt: "
 
-logfile="/var/log/accepted_message.log"
+# Edit this if you want to use something other than "yes" as acknowledgement
+readonly ACCEPT="yes"
+# Edit this to alter the prompt:
+readonly PROMPT="Please acknowledge you have read and understand the above MESSAGE by typing \"${ACCEPT}\" at this prompt: "
+
+
+# Location of logfile; must be world writable
+readonly LOGFILE="/var/log/acceptor.log"
 
 #################################################
 ###### DO NOT CHANGE BELOW THIS POINT ###########
@@ -41,7 +47,7 @@ print_message(){
     printf "%s\n" "$@"
  }
 
-message_key(){
+make_message_key(){
     key=""
     for i in "${@}"
     do
@@ -49,15 +55,13 @@ message_key(){
 	key+=" "
     done
     echo "$key"
-
-
  }
 
-messageKey=$(message_key "${message[@]}")
+readonly messageKey=$(make_message_key "${MESSAGE[@]}")
 
-if [ ! -f $logfile ]; then
+if [ ! -f $LOGFILE ]; then
     echo ""
-    echo "Error: accept_message.sh: Missing log file: $logfile"
+    echo "Error: acceptor.sh: Missing log file: $logfile"
     echo ""
 else
     # Are we on a tty?
@@ -68,25 +72,22 @@ else
 	    ##
 
 	    echo ""
-	    #print_message ${message[@]}"
-	    print_message "${message[@]}" # works!
+	    print_message "${MESSAGE[@]}"
 	    echo ""
 
-	    userMessageKey="$USER|$messageKey"
+	    readonly userMessageKey="$USER|$messageKey"
 
-	    #hits=`grep -F -c "$userMessageKey\\$" $logfile`
-	    hits=`grep -F -c "$userMessageKey" $logfile`
+	    readonly hits=`grep -F -c "$userMessageKey" $LOGFILE`
 
 	    if [ $hits == "0" ]; then
 		for (( ; ; ))
 		do
 		    echo "#########################################################################################"
-		    read -p "$prompt" ack
+		    read -p "$PROMPT" ACK
 		    
-		    if  [ $ack == "yes" ] || [ $ack == "YES" ] ; then
-			
+		    if  [ $ACK == "${ACCEPT}" ] || [ $ACK == "YES" ] ; then
 			date=`date`
-			echo "$date|${userMessageKey}" >> $logfile
+			echo "$date|${userMessageKey}" >> $LOGFILE
 			break
 		    fi
 		done

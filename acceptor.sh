@@ -29,16 +29,13 @@ set -e
 # Message goes here; any number of lines.
 #     Alternate syntax acceptable:
 #       MESSAGE=("[example] Foobar varsion 1.7 installed", "  Foobar v.1.6 still available", " Any issues please contact foo@bar.com")
-MESSAGE[0]="[example] Foobar varsion 1.7 installed; Foobar v.1.6 still available at /opt/old/foobar"
-MESSAGE[1]="   Foobar v.1.6 still available at /opt/old/foobar"
-MESSAGE[2]="   Any issues please contact foo@bar.com 233fdddd"
+MESSAGE="[example] Foobar varsion 1.7 installed; Foobar v.1.6 still available at /opt/old/foobar Foobar v.1.6 still available at /opt/old/foobar. Any issues please contact foo@bar.com mm m"
 
 # Edit this if you want to use something other than "yes" as user acknowledgement input
 readonly ACCEPT="yes"
 
 # Edit this to alter the prompt; above alternate syntax for MESSAGE also applies
-PROMPT[0]="Please acknowledge you have read and understand the above MESSAGE"
-PROMPT[1]="by typing \"${ACCEPT}\":"
+PROMPT="Please acknowledge you have read and understand the above MESSAGE by typing \"${ACCEPT}\":"
 
 
 # Location of logfile; must be world writable
@@ -48,9 +45,13 @@ readonly LOGFILE="/var/log/acceptor.log"
 ###### DO NOT CHANGE BELOW THIS POINT ###########
 #################################################
 
+print(){
+    printf "%s\n" "$@"
+}
 
 print_multiline(){
-    printf "%s\n" "$@"
+    lines=`echo "$1" | fold  -w 80 -s`
+    print "${lines[@]}"
  }
 
 make_message_key(){
@@ -63,7 +64,8 @@ make_message_key(){
     echo "$key"
  }
 
-readonly messageKey=$(make_message_key "${MESSAGE[@]}")
+#readonly messageKey=$(make_message_key "${MESSAGE[@]}")
+#readonly messageKey=$(make_message_key "${MESSAGE[@]}")
 
 if [ ! -f $LOGFILE ]; then
     echo ""
@@ -81,14 +83,15 @@ else
 	    print_multiline "${MESSAGE[@]}"
 	    echo ""
 
-	    readonly userMessageKey="$USER|$messageKey"
+	    #readonly userMessageKey="$USER|$messageKey"
+	    readonly userMessageKey="$USER|$MESSAGE"
 
 	    readonly hits=`grep -F -c "$userMessageKey" $LOGFILE`
 
 	    if [ $hits == "0" ]; then
 		for (( ; ; ))
 		do
-		    echo "#########################################################################################"
+		    echo "#################################################################################"
 		    print_multiline "${PROMPT[@]}"
 		    read -p "     >" ACK
 		    

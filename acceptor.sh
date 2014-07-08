@@ -1,7 +1,12 @@
 #!/bin/bash
 # 
-# Accept message script
-# To be used in 
+# ---acceptor---
+# 
+# - Run at login with a message that must be accepted by the user before proceeding
+# - Logs the acceptance
+# - Only demands acceptance once per user, per message
+# - Displays message every time
+# - control-c and control-z disabled
 #
 # Copyright 2014 Government of Canada
 #
@@ -9,7 +14,7 @@
 # 
 # Author: Glen Newton glen.newton@agr.gc.ca glen.newton@gmail.com
 # 
-# Developeed at: Microbial Biodiversity Bioinformatics @ Agriculture and Agri-Food Canada
+# Developed at: Microbial Biodiversity Bioinformatics Group @ Agriculture and Agri-Food Canada
 # 
 # Usage: add to /etc/profile.d
 #        - Edit 'message' as necessary

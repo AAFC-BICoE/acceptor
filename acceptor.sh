@@ -24,89 +24,94 @@
 #           - must be world writable
 #
 
-set -e
+main(){
+
+    set -e
 
 # Message goes here; any number of lines.
 #     Alternate syntax acceptable:
 #       MESSAGE=("[example] Foobar varsion 1.7 installed", "  Foobar v.1.6 still available", " Any issues please contact foo@bar.com")
-MESSAGE="[example] Foobar varsion 1.7 installed; Foobar v.1.6 still available at /opt/old/foobar Foobar v.1.6 still available at /opt/old/foobar. Any issues please contact foo@bar.com mm m"
+    local MESSAGE="R will be updated to version 3.10 on July 9 2014. The old version will still be available at: /usr/bin/R. If you have any questions or issues, please contact glen.newton@agr.gc.ca 2"
 
 # Edit this if you want to use something other than "yes" as user acknowledgement input
-readonly ACCEPT="yes"
+    local readonly ACCEPT_STRING="yes"
 
 # Edit this to alter the prompt; above alternate syntax for MESSAGE also applies
-PROMPT="Please acknowledge you have read and understand the above MESSAGE by typing \"${ACCEPT}\":"
+    local readonly PROMPT="Please acknowledge you have read and understand the above MESSAGE by typing \"${ACCEPT_STRING}\":"
 
 
 # Location of logfile; must be world writable
-readonly LOGFILE="/var/log/acceptor.log"
+    local readonly LOGFILE="/var/log/acceptor.log"
 
 #################################################
 ###### DO NOT CHANGE BELOW THIS POINT ###########
 #################################################
 
-print(){
-    printf "%s\n" "$@"
+    print(){
+	printf "%s\n" "$@"
+    }
+
+    print_multiline(){
+	lines=`echo "$1" | fold  -w 80 -s`
+	print "${lines[@]}"
+    }
+
+    make_message_key(){
+	key=""
+	for i in "${@}"
+	do
+	    key+=$i
+	    key+=" "
+	done
+	echo "$key"
+    }
+
+    if [ ! -f $LOGFILE ]; then
+	echo ""
+	echo "Error: acceptor.sh: Missing log file: $logfile"
+	echo ""
+    else
+	
+        ## Disable Ctrl+C, Ctrl+Z 
+	trap '' 2 20
+        ##
+
+        # Are we on a tty?
+	case $(tty) in /dev/pts/[0-9]*)
+
+
+		echo ""
+		print_multiline "${MESSAGE[@]}"
+		echo ""
+
+	        #readonly userMessageKey="$USER|$messageKey"
+		local readonly userMessageKey="$USER|$MESSAGE"
+
+		local readonly hits=`grep -F -c "$userMessageKey" $LOGFILE`
+
+		if [ $hits == "0" ]; then
+		    for (( ; ; ))
+		    do
+			echo "#################################################################################"
+			print_multiline "${PROMPT[@]}"
+			read -p "     >" ACK
+			echo ""
+			echo ""		    
+			if  [ $ACK == "${ACCEPT_STRING}" ] || [ $ACK == "YES" ] ; then
+			    local date=`date`
+			    echo "$date|${userMessageKey}" >> $LOGFILE
+			    break
+			fi
+		    done
+		fi
+
+	esac
+        # Enable Ctrl+C, Ctrl+Z, 
+	trap 2 20
+        #
+    fi
 }
 
-print_multiline(){
-    lines=`echo "$1" | fold  -w 80 -s`
-    print "${lines[@]}"
- }
 
-make_message_key(){
-    key=""
-    for i in "${@}"
-    do
-	key+=$i
-	key+=" "
-    done
-    echo "$key"
- }
+(main)
 
-#readonly messageKey=$(make_message_key "${MESSAGE[@]}")
-#readonly messageKey=$(make_message_key "${MESSAGE[@]}")
-
-if [ ! -f $LOGFILE ]; then
-    echo ""
-    echo "Error: acceptor.sh: Missing log file: $logfile"
-    echo ""
-else
-    # Are we on a tty?
-    case $(tty) in /dev/pts/[0-9]*)
-
-	    ## Disable Ctrl+C, Ctrl+Z 
-	    trap '' 2 20
-	    ##
-
-	    echo ""
-	    print_multiline "${MESSAGE[@]}"
-	    echo ""
-
-	    #readonly userMessageKey="$USER|$messageKey"
-	    readonly userMessageKey="$USER|$MESSAGE"
-
-	    readonly hits=`grep -F -c "$userMessageKey" $LOGFILE`
-
-	    if [ $hits == "0" ]; then
-		for (( ; ; ))
-		do
-		    echo "#################################################################################"
-		    print_multiline "${PROMPT[@]}"
-		    read -p "     >" ACK
-		    
-		    if  [ $ACK == "${ACCEPT}" ] || [ $ACK == "YES" ] ; then
-			date=`date`
-			echo "$date|${userMessageKey}" >> $LOGFILE
-			break
-		    fi
-		done
-	    fi
-
-	    # Enable Ctrl+C, Ctrl+Z, 
-	    trap 2 20
-	    #
-	    echo ""
-	    echo ""
-    esac
-fi

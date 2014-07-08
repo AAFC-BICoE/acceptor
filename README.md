@@ -31,7 +31,7 @@ Usage
 * Edit the script variable:
     * `MESSAGE`: string of the important message; automatically split into 80 columns
     * `PROMPT`: this is the prompt that asks the question of the user (i.e. "Acknowledge software X is now version 2.4"). string; automatically split into 80 columns
-    * `ACCEPT`: the string the user must type in to complete the acknowledgement. Default: `yes`
+    * `ACCEPT`: the string the user must type in to complete the acknowledgment . Default: `yes`
     * `LOGFILE`: location on filesystem of log file. Must be writable by users. Default: `/var/log/acceptor.log`
 
 Log file Format

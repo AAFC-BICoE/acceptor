@@ -27,17 +27,18 @@
 set -e
 
 # Message goes here; any number of lines.
-#     Alternate form acceptable:
+#     Alternate syntax acceptable:
 #       MESSAGE=("[example] Foobar varsion 1.7 installed", "  Foobar v.1.6 still available", " Any issues please contact foo@bar.com")
 MESSAGE[0]="[example] Foobar varsion 1.7 installed; Foobar v.1.6 still available at /opt/old/foobar"
 MESSAGE[1]="   Foobar v.1.6 still available at /opt/old/foobar"
-MESSAGE[2]="   Any issues please contact foo@bar.com 23"
+MESSAGE[2]="   Any issues please contact foo@bar.com 233fdddd"
 
-
-# Edit this if you want to use something other than "yes" as acknowledgement
+# Edit this if you want to use something other than "yes" as user acknowledgement input
 readonly ACCEPT="yes"
-# Edit this to alter the prompt:
-readonly PROMPT="Please acknowledge you have read and understand the above MESSAGE by typing \"${ACCEPT}\" at this prompt: "
+
+# Edit this to alter the prompt; above alternate syntax for MESSAGE also applies
+PROMPT[0]="Please acknowledge you have read and understand the above MESSAGE"
+PROMPT[1]="by typing \"${ACCEPT}\":"
 
 
 # Location of logfile; must be world writable
@@ -48,7 +49,7 @@ readonly LOGFILE="/var/log/acceptor.log"
 #################################################
 
 
-print_message(){
+print_multiline(){
     printf "%s\n" "$@"
  }
 
@@ -77,7 +78,7 @@ else
 	    ##
 
 	    echo ""
-	    print_message "${MESSAGE[@]}"
+	    print_multiline "${MESSAGE[@]}"
 	    echo ""
 
 	    readonly userMessageKey="$USER|$messageKey"
@@ -88,7 +89,8 @@ else
 		for (( ; ; ))
 		do
 		    echo "#########################################################################################"
-		    read -p "$PROMPT" ACK
+		    print_multiline "${PROMPT[@]}"
+		    read -p "     >" ACK
 		    
 		    if  [ $ACK == "${ACCEPT}" ] || [ $ACK == "YES" ] ; then
 			date=`date`

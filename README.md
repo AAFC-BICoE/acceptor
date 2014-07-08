@@ -30,7 +30,7 @@ Usage
 * Put the script in `/etc/profile.d/` (depends on your distro of Linux: you want the script run at login); should be world executable
 * Edit the script variable:
     * `MESSAGE`: this is a bash array with your message; can span multiple lines
-    * `PROMPT`: this is the prompt that asks the question of the user (i.e. "Acknowledge software X is now version 2.4")
+    * `PROMPT`: this is the prompt that asks the question of the user (i.e. "Acknowledge software X is now version 2.4"). bash array; can span multiple lines.
     * `ACCEPT`: the string the user must type in to complete the acknowledgement. Default: `yes`
     * `LOGFILE`: location on filesystem of log file. Must be writable by users. Default: `/var/log/acceptor.log`
 

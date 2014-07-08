@@ -1,7 +1,9 @@
 acceptor
 ========
 
-bash script for acknowledging of login messages &amp; logging acceptance
+bash script for acknowledging of login messages &amp; logging acceptance. 
+
+Communicates changes to login users and makes sure users have acknowledged these changes, putting the onus on the user to deal with any impact on their work.
 
 * Run at login with a message that must be accepted by the user before proceeding
 * Logs the acceptance
@@ -12,7 +14,7 @@ bash script for acknowledging of login messages &amp; logging acceptance
 Background
 =======
 MBB runs clusters for scientific research, supporting AAFC and other scientists in their research.
-The software on the Rocks cluster periodically needs to be upgraded to new versions.
+The software on the Rocks cluster frequently needs to be upgraded to new versions.
 
 **New versions of software can produce different results than earlier versions, given the same inputs.**
 This might be problematic if the upgrade occurs in mid-analysis.

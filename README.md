@@ -42,12 +42,9 @@ date-time|userid|message-with-line-feeds-removed
 ```
 
 
-Copyright, Acknowledgements & Attribution
+Copyright, License, Attribution& Acknowledgements
 =====
-Copyright 2014 Government of Canada
-
-MIT License (See LICENSE file)
- 
-Author: Glen Newton glen.newton@agr.gc.ca glen.newton@gmail.com
-
-Developed at: Microbial Biodiversity Bioinformatics Group @ Agriculture and Agri-Food Canada
+* Copyright 2014 Government of Canada
+* MIT License (See LICENSE file)
+* Author: Glen Newton glen.newton@agr.gc.ca glen.newton@gmail.com
+* Developed at: Microbial Biodiversity Bioinformatics Group @ Agriculture and Agri-Food Canada
